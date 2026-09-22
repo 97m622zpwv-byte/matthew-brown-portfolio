@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relational Volunteer Database | Matthew Brown</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .case{padding:80px 0}.case h1{font-size:clamp(2.5rem,7vw,5.2rem);letter-spacing:-.055em;line-height:.95}
+    .case p{max-width:820px;color:var(--muted)} pre{overflow:auto;background:#090c10;border:1px solid var(--line);padding:22px;border-radius:14px;color:#e8edf3}
+    .case-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0}.case-grid div{background:var(--panel);border:1px solid var(--line);padding:18px;border-radius:12px}
+    @media(max-width:760px){.case-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <header class="site-header"><nav class="nav wrap"><a class="brand" href="../index.html">MB<span>.</span></a><a href="../index.html#projects">← Projects</a></nav></header>
+  <main class="case wrap">
+    <div class="eyebrow">SQL · MARIADB · DBEAVER</div>
+    <h1>Relational Volunteer Database</h1>
+    <p>
+      A database project designed around volunteer records, weekly hours, and fundraising activity.
+      The schema separates data by subject and uses primary/foreign keys to preserve relationships.
+      Queries recombine the tables for operational reporting.
+    </p>
+    <div class="case-grid">
+      <div><strong>Schema</strong><p>person, hours, and funds tables with primary keys, foreign keys, uniqueness, and nonnegative-value constraints.</p></div>
+      <div><strong>Queries</strong><p>INNER JOINs, three-table JOINs, GROUP BY, SUM, AVG, ORDER BY, and nested subqueries.</p></div>
+      <div><strong>Reporting</strong><p>Weekly fundraising, fundraising per hour, volunteer totals, and above-average activity.</p></div>
+    </div>
+    <h2>Representative query</h2>
+    <p>This query combines volunteer identity, weekly hours, and fundraising to calculate dollars raised per hour.</p>
+<pre><code>SELECT
+    p.person_id,
+    CONCAT(p.first_name, ' ', p.last_name) AS volunteer_name,
+    h.week_start,
+    h.hours_worked,
+    f.amount_raised,
+    ROUND(f.amount_raised / NULLIF(h.hours_worked, 0), 2)
+        AS dollars_raised_per_hour
+FROM person AS p
+INNER JOIN hours AS h
+    ON p.person_id = h.person_id
+INNER JOIN funds AS f
+    ON p.person_id = f.person_id
+   AND h.week_start = f.week_start
+ORDER BY h.week_start, dollars_raised_per_hour DESC;</code></pre>
+    <p><a class="button secondary" href="../index.html#projects">Back to portfolio</a></p>
+  </main>
+</body>
+</html>
